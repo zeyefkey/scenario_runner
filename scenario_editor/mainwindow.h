@@ -3,12 +3,11 @@
 
 
 #include <iostream>
-#include <chrono>
-#include <thread>
 
 #include <QImage>
 #include <QGraphicsScene>
 #include <QMainWindow>
+#include <QMouseEvent>
 
 #include "carlastreamthread.h"
 
@@ -36,6 +35,9 @@ private:
     QPixmap image_map;
     QImage  *imageObject;
     QGraphicsScene *scene;
+
+protected:
+    void mousePressEvent(QMouseEvent* event);
 };
 
 #endif // MAINWINDOW_H

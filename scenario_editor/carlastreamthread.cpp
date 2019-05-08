@@ -18,6 +18,9 @@ CarlaStreamThread::CarlaStreamThread(QObject* parent):
 
 CarlaStreamThread::~CarlaStreamThread(){
     camera->Destroy();
+    for(auto actor: actor_list) {
+        actor->Destroy();
+    }
 }
 
 void CarlaStreamThread::run() {
@@ -30,6 +33,20 @@ int CarlaStreamThread::image_callback (carla::SharedPtr<carla::sensor::SensorDat
     uchar* image_buffer = (uchar*) image_data->data();
     QImage q_image(image_buffer, 800, 600, QImage::Format_ARGB32);
     emit renderedImage(q_image);
+
+    return 0;
+}
+
+int CarlaStreamThread::makeATesla(int x, int y) {
+    float k = 0.05f;
+    auto world = client_connection.GetWorld();
+    auto blueprint_library = world.GetBlueprintLibrary();
+    auto bp = blueprint_library->Find("vehicle.tesla.model3");
+    auto transform = carla::geom::Transform{
+        carla::geom::Location{-1*float(y-400)*k, float(x-300)*k, 80.0f},
+        carla::geom::Rotation{0.0f, 0.0f, 0.0f}};
+    auto actor = world.SpawnActor(*bp, transform);
+    actor_list.push_back(actor);
 
     return 0;
 }

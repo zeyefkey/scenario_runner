@@ -21,6 +21,8 @@ public:
     CarlaStreamThread(QObject *parent = 0);
     ~CarlaStreamThread();
 
+    int makeATesla(int x, int y);
+
 signals:
     void renderedImage(const QImage &image);
 
@@ -31,6 +33,7 @@ private:
 
    carla::client::Client client_connection;
    carla::SharedPtr<carla::client::Sensor> camera;
+   std::vector<carla::SharedPtr<carla::client::Actor>> actor_list;
 
    int image_callback (carla::SharedPtr<carla::sensor::SensorData> data);
 

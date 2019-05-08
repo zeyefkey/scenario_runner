@@ -23,3 +23,11 @@ int MainWindow::updatePixmap(const QImage &image) {
 
     return 0;
 }
+
+void MainWindow::mousePressEvent(QMouseEvent* event) {
+    try {
+        thread.makeATesla(event->x(), event->y());
+    } catch(...) {
+        std::cout << "\nFailed to spawn actor !\n";
+    }
+}
