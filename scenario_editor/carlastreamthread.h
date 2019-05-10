@@ -1,9 +1,11 @@
 #ifndef CARLASTREAMTHREAD_H
 #define CARLASTREAMTHREAD_H
 
+#include <random>
+#include <typeinfo>
+
 #include <QThread>
 #include <QImage>
-
 #include <carla/client/Client.h>
 #include <carla/client/ActorBlueprint.h>
 #include <carla/client/BlueprintLibrary.h>
