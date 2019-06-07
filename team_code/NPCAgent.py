@@ -1,7 +1,7 @@
 import scipy.misc
 
 import carla
-from agents.navigation.basic_agent import *
+from basic_agent import *
 
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 
