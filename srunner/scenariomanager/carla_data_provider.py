@@ -468,6 +468,13 @@ class CarlaActorPool(object):
         CarlaActorPool._sync(CarlaActorPool._world.tick())
         return actor
 
+
+    @staticmethod
+    def _sync(frame):
+        while frame > CarlaActorPool._world.get_snapshot().timestamp.frame:
+            pass
+        assert frame == CarlaActorPool._world.get_snapshot().timestamp.frame
+
     @staticmethod
     def setup_batch_actors(model, amount, spawn_point, hero=False, autopilot=False, random_location=False):
         """
