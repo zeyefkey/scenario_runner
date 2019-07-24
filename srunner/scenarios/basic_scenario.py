@@ -58,19 +58,18 @@ class BasicScenario(object):
             py_trees.logging.level = py_trees.logging.Level.DEBUG
 
         behavior = self._create_behavior()
-
         criteria = None
         if criteria_enable:
             criteria = self._create_test_criteria()
 
-        # Add a trigger condition for the behavior to ensure the behavior is only activated, when it is relevant
+        # Add a trigger condition for the behavior to ensure the behavior is only activated,
+        # when it is relevant
 
         start_location = None
         if config.trigger_point:
             start_location = config.trigger_point.location     # start location of the scenario
 
         ego_vehicle_route = CarlaDataProvider.get_ego_vehicle_route()
-
         behavior_seq = py_trees.composites.Sequence()
         if start_location:
             if ego_vehicle_route:

@@ -724,6 +724,7 @@ class RouteCompletionTest(Criterion):
         Check if the actor location is within trigger region
         """
         new_status = py_trees.common.Status.RUNNING
+        epsilon = 0.0000001  # important to avoid division by zero
 
         location = CarlaDataProvider.get_location(self._actor)
         if location is None:
@@ -742,7 +743,7 @@ class RouteCompletionTest(Criterion):
                     # good! segment completed!
                     self._current_index = index
                     self._percentage_route_completed = 100.0 * float(self._accum_meters[self._current_index]) \
-                                                       / float(self._accum_meters[-1])
+                                                       / (float(self._accum_meters[-1]) + epsilon)
                     logging.debug("percentaged completed %f ", self._percentage_route_completed)
                     self._traffic_event.set_dict({'route_completed': self._percentage_route_completed})
                     self._traffic_event.set_message(
