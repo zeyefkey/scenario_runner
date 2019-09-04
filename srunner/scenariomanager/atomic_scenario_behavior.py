@@ -472,7 +472,7 @@ class AccelerateToVelocity(AtomicBehavior):
             else:
                 new_status = py_trees.common.Status.SUCCESS
                 self._control.throttle = 0
-
+        print ( " RUNNING OVER LANE ", self._control)
         self._actor.apply_control(self._control)
         self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
 
@@ -520,6 +520,8 @@ class KeepVelocity(AtomicBehavior):
                 self._control.throttle = 1.0
             else:
                 self._control.throttle = 0.0
+
+        print ( " Applying control to walker ", self._control)
         self._actor.apply_control(self._control)
 
         self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
