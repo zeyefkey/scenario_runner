@@ -193,7 +193,7 @@ class DynamicObjectCrossing(BasicScenario):
         if self._adversary_type is False:
             self._walker_yaw = orientation_yaw
             self._other_actor_target_velocity = 3 + (0.4 * self._num_lane_changes)
-            walker = CarlaActorPool.request_new_actor('walker*', transform)
+            walker = CarlaActorPool.request_new_actor('walker.*', transform)
 
             adversary = walker
         else:
