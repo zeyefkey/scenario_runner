@@ -149,6 +149,7 @@ class DynamicObjectCrossing(BasicScenario):
         self._adversary_type = adversary_type  # flag to select either pedestrian (False) or cyclist (True)
         self._walker_yaw = 0
         self._num_lane_changes = 1
+        self.transform = None
         self.transform2 = None
         self.timeout = timeout
         self._trigger_location = config.trigger_point.location
@@ -192,7 +193,7 @@ class DynamicObjectCrossing(BasicScenario):
         if self._adversary_type is False:
             self._walker_yaw = orientation_yaw
             self._other_actor_target_velocity = 3 + (0.4 * self._num_lane_changes)
-            walker = CarlaActorPool.request_new_actor('walker*', transform)
+            walker = CarlaActorPool.request_new_actor('walker.*', transform)
             adversary = walker
         else:
             self._other_actor_target_velocity = self._other_actor_target_velocity * self._num_lane_changes
@@ -296,7 +297,7 @@ class DynamicObjectCrossing(BasicScenario):
         if self._ego_route is not None:
             start_condition = InTriggerDistanceToLocationAlongRoute(self.ego_vehicle,
                                                                     self._ego_route,
-                                                                    self.other_actors[0].get_location(),
+                                                                    self.transform.location,
                                                                     15)
         else:
             start_condition = InTimeToArrivalToVehicle(self.other_actors[0],
