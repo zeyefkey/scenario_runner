@@ -402,7 +402,8 @@ class InTriggerDistanceToLocationAlongRoute(AtomicBehavior):
     is within a given distance to a given location considering a given route
     """
 
-    def __init__(self, actor, route, location, distance, name="InTriggerDistanceToLocationAlongRoute"):
+    def __init__(self, actor, route, location, distance,
+                 name="InTriggerDistanceToLocationAlongRoute"):
         """
         Setup class members
         """
@@ -422,7 +423,7 @@ class InTriggerDistanceToLocationAlongRoute(AtomicBehavior):
 
         if current_location is None:
             return new_status
-
+        print ("DIstance Trigger ", current_location.distance(self._location))
         if current_location.distance(self._location) < self._distance + 20:
 
             actor_distance, _ = get_distance_along_route(self._route, current_location)
@@ -430,6 +431,7 @@ class InTriggerDistanceToLocationAlongRoute(AtomicBehavior):
             if (self._location_distance < actor_distance + self._distance and
                 actor_distance < self._location_distance) or \
                     self._location_distance < 1.0:
+                print ( " TRIGGERED PEDESTRIAN")
                 new_status = py_trees.common.Status.SUCCESS
 
         return new_status
@@ -910,6 +912,7 @@ class TrafficJamChecker(AtomicBehavior):
         current_game_time = GameTime.get_time()
         for actor_id, actor in CarlaActorPool.get_actors():
             if actor.attributes['role_name'] == 'autopilot':
+
                 actor.set_autopilot(True)
                 self.table_blocked_actors[actor_id] = {'location': actor.get_location(),
                                                        'time': current_game_time
