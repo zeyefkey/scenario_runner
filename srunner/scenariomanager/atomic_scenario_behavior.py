@@ -558,6 +558,10 @@ class DriveDistance(AtomicBehavior):
 
     def initialise(self):
         self._location = CarlaDataProvider.get_location(self._actor)
+
+        print ("Initialized location", self._location)
+
+        print ( "########")
         super(DriveDistance, self).initialise()
 
     def update(self):
@@ -565,6 +569,7 @@ class DriveDistance(AtomicBehavior):
         Check driven distance
         """
         new_status = py_trees.common.Status.RUNNING
+        print ( " ACTOR  ", self._actor, " class ", self.__class__.__name__)
 
         new_location = CarlaDataProvider.get_location(self._actor)
         self._distance += calculate_distance(self._location, new_location)
