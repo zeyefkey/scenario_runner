@@ -298,7 +298,8 @@ class DynamicObjectCrossing(BasicScenario):
         if self._ego_route is not None:
             start_condition = InTriggerDistanceToLocationAlongRoute(self.ego_vehicle,
                                                                     self._ego_route,
-                                                                    self.transform.location,
+                                                                    self.other_actors[
+                                                                        0].get_location(),
                                                                     15)
         else:
             start_condition = InTimeToArrivalToVehicle(self.other_actors[0],
@@ -347,9 +348,11 @@ class DynamicObjectCrossing(BasicScenario):
 
         root.add_child(scenario_sequence)
         scenario_sequence.add_child(ActorTransformSetter(self.other_actors[0], self.transform,
-                                                         name='TransformSetterTS3walker', physics=False))
+                                                         name='TransformSetterTS3walker',
+                                                         physics=False))
         scenario_sequence.add_child(ActorTransformSetter(self.other_actors[1], self.transform2,
-                                                         name='TransformSetterTS3coca', physics=False))
+                                                         name='TransformSetterTS3coca',
+                                                         physics=False))
         scenario_sequence.add_child(HandBrakeVehicle(self.other_actors[0], True))
         scenario_sequence.add_child(start_condition)
         scenario_sequence.add_child(HandBrakeVehicle(self.other_actors[0], False))
