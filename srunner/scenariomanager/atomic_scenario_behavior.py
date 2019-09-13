@@ -569,7 +569,7 @@ class DriveDistance(AtomicBehavior):
         Check driven distance
         """
         new_status = py_trees.common.Status.RUNNING
-        print ( " ACTOR  ", self._actor, " class ", self.__class__.__name__)
+        print ( " ACTOR  ", self._actor, " class ", self.name)
 
         new_location = CarlaDataProvider.get_location(self._actor)
         self._distance += calculate_distance(self._location, new_location)
@@ -643,7 +643,7 @@ class StopVehicle(AtomicBehavior):
         Set brake to brake_value until reaching full stop
         """
         new_status = py_trees.common.Status.RUNNING
-
+        print ( " PRINT STOP VEHICLE  ")
         if self._type == 'vehicle':
             if CarlaDataProvider.get_velocity(self._actor) > EPSILON:
                 self._control.brake = self._brake_value
@@ -1146,6 +1146,7 @@ class ActorDestroy(AtomicBehavior):
     def update(self):
         new_status = py_trees.common.Status.RUNNING
         if self._actor:
+            print ( "DESTROY THE ACTOR Due to EVENT  ?")
             CarlaActorPool.remove_actor_by_id(self._actor.id)
             self._actor = None
             new_status = py_trees.common.Status.SUCCESS
