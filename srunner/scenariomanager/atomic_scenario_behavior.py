@@ -576,6 +576,7 @@ class DriveDistance(AtomicBehavior):
         self._location = new_location
 
         if self._distance > self._target_distance:
+            print ( " SUCCESS ENOUGH DISTANCE FOR ", self.name)
             new_status = py_trees.common.Status.SUCCESS
 
         self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
