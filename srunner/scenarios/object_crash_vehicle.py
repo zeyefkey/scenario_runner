@@ -325,7 +325,7 @@ class DynamicObjectCrossing(BasicScenario):
                                               self._other_actor_max_brake,
                                               name="walker stop")
         ego_pass_machine = DriveDistance(self.ego_vehicle,
-                                         5,
+                                         20,
                                          name="ego vehicle passed prop")
         actor_remove = ActorDestroy(self.other_actors[0],
                                     name="Destroying walker")
