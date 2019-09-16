@@ -278,6 +278,7 @@ class CollisionTest(Criterion):
 
         distance, walker = distance_walkers(self.actor)
         registered = False
+        actor_type = None
         if distance < 1.0:
             for traffic_event in self.list_traffic_events:
                 if traffic_event.get_type() == TrafficEventType.COLLISION_PEDESTRIAN \
