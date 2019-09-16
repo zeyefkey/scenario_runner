@@ -28,6 +28,7 @@ from srunner.scenariomanager.traffic_events import TrafficEvent, TrafficEventTyp
 def distance_walkers(ego_actor):
 
     distance = 10000
+    walker_id = None
     world = ego_actor.get_world()
     for actor in world.get_actors():
         if 'walker' in actor.type_id:
@@ -268,11 +269,33 @@ class CollisionTest(Criterion):
         self._collision_sensor.listen(lambda event: self._count_collisions(weakref.ref(self),
                                                                            event))
 
+    def special_pedestrian_collision_check(self):
+
+        distance, walker = distance_walkers(self.actor)
+        registered = False
+        if distance < 1.0:
+            for traffic_event in self.list_traffic_events:
+                if traffic_event.get_type() == TrafficEventType.COLLISION_PEDESTRIAN \
+                        and traffic_event.get_dict()['id'] == walker.id:
+                    registered = True
+            actor_type = TrafficEventType.COLLISION_PEDESTRIAN
+
+        if not registered:
+            collision_event = TrafficEvent(event_type=actor_type)
+            collision_event.set_dict(
+                {'type': walker.type_id, 'id': walker.id})
+            collision_event.set_message(
+                "Agent collided against object with type={} and id={}".format(
+                    walker.type_id, walker.id))
+            self.list_traffic_events.append(collision_event)
+
     def update(self):
         """
         Check collision count
         """
+
         new_status = py_trees.common.Status.RUNNING
+        self.special_pedestrian_collision_check()
 
         if self._terminate_on_failure and (self.test_status == "FAILURE"):
             new_status = py_trees.common.Status.FAILURE
@@ -310,12 +333,14 @@ class CollisionTest(Criterion):
                     and traffic_event.get_dict()['id'] == event.other_actor.id:
                         registered = True
             actor_type = TrafficEventType.COLLISION_VEHICLE
-        elif 'walker' in event.other_actor.type_id or distance_walkers(weak_self.actor) < 1.0:
+            self.test_status = "FAILURE"
+        elif 'walker' in event.other_actor.type_id:
             for traffic_event in self.list_traffic_events:
                 if traffic_event.get_type() == TrafficEventType.COLLISION_PEDESTRIAN \
                         and traffic_event.get_dict()['id'] == event.other_actor.id:
                     registered = True
             actor_type = TrafficEventType.COLLISION_PEDESTRIAN
+            self.test_status = "FAILURE"
 
         if not registered:
             collision_event = TrafficEvent(event_type=actor_type)
