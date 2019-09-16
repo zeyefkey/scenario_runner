@@ -258,7 +258,9 @@ class DynamicObjectCrossing(BasicScenario):
                 break
             except RuntimeError as r:
                 # We keep retrying until we spawn
+                print ("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
                 print("Base transform is blocking objects ", self.transform)
+                print ("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
                 _start_distance += 0.4
                 self._spawn_attempted += 1
                 if self._spawn_attempted >= self._number_of_attempts:
