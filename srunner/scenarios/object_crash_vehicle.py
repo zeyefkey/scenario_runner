@@ -298,13 +298,10 @@ class DynamicObjectCrossing(BasicScenario):
         lane_width = lane_width + (1.25 * lane_width * self._num_lane_changes)
         # leaf nodes
         if self._ego_route is not None:
-            print ("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
-            print(" EGO ROUTE IS NOT NONE ")
-            print ("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH")
             start_condition = InTriggerDistanceToLocationAlongRoute(self.ego_vehicle,
                                                                     self._ego_route,
                                                                     self.transform.location,
-                                                                    10)
+                                                                    11)
         else:
             start_condition = InTimeToArrivalToVehicle(self.other_actors[0],
                                                        self.ego_vehicle,
