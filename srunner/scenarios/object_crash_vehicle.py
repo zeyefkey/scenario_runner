@@ -304,7 +304,7 @@ class DynamicObjectCrossing(BasicScenario):
             start_condition = InTriggerDistanceToLocationAlongRoute(self.ego_vehicle,
                                                                     self._ego_route,
                                                                     self.transform.location,
-                                                                    6)
+                                                                    4)
         else:
             start_condition = InTimeToArrivalToVehicle(self.other_actors[0],
                                                        self.ego_vehicle,
