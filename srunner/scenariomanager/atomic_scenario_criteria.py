@@ -25,6 +25,17 @@ from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenariomanager.timer import GameTime
 from srunner.scenariomanager.traffic_events import TrafficEvent, TrafficEventType
 
+def distance_walkers(ego_actor):
+
+    distance = 10000
+    world = ego_actor.get_world()
+    for actor in world.get_actors():
+        if 'walker' in actor.type_id:
+            distance = min(distance, actor.get_transform().location.distance(
+                                     ego_actor.get_transform().location
+            ))
+
+    return distance
 
 class Criterion(py_trees.behaviour.Behaviour):
 
@@ -252,8 +263,10 @@ class CollisionTest(Criterion):
 
         world = self.actor.get_world()
         blueprint = world.get_blueprint_library().find('sensor.other.collision')
-        self._collision_sensor = world.spawn_actor(blueprint, carla.Transform(), attach_to=self.actor)
-        self._collision_sensor.listen(lambda event: self._count_collisions(weakref.ref(self), event))
+        self._collision_sensor = world.spawn_actor(blueprint, carla.Transform(),
+                                                   attach_to=self.actor)
+        self._collision_sensor.listen(lambda event: self._count_collisions(weakref.ref(self),
+                                                                           event))
 
     def update(self):
         """
@@ -297,7 +310,7 @@ class CollisionTest(Criterion):
                     and traffic_event.get_dict()['id'] == event.other_actor.id:
                         registered = True
             actor_type = TrafficEventType.COLLISION_VEHICLE
-        elif 'walker' in event.other_actor.type_id:
+        elif 'walker' in event.other_actor.type_id or distance_walkers(weak_self.actor) < 1.0:
             for traffic_event in self.list_traffic_events:
                 if traffic_event.get_type() == TrafficEventType.COLLISION_PEDESTRIAN \
                         and traffic_event.get_dict()['id'] == event.other_actor.id:
