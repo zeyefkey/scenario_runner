@@ -27,16 +27,21 @@ from srunner.scenariomanager.traffic_events import TrafficEvent, TrafficEventTyp
 
 def distance_walkers(ego_actor):
 
-    distance = 10000
+    min_distance = 10000
     walker_id = None
     world = ego_actor.get_world()
     for actor in world.get_actors():
         if 'walker' in actor.type_id:
-            distance = min(distance, actor.get_transform().location.distance(
+            distance = actor.get_transform().location.distance(
                                      ego_actor.get_transform().location
-            ))
+            )
+            if distance < min_distance:
 
-    return distance
+                min_distance = distance
+                walker_id = actor
+
+
+    return min_distance, walker_id
 
 class Criterion(py_trees.behaviour.Behaviour):
 
