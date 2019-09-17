@@ -301,7 +301,7 @@ class CollisionTest(Criterion):
         """
 
         new_status = py_trees.common.Status.RUNNING
-        self.special_pedestrian_collision_check()
+        #self.special_pedestrian_collision_check()
 
         if self._terminate_on_failure and (self.test_status == "FAILURE"):
             new_status = py_trees.common.Status.FAILURE
