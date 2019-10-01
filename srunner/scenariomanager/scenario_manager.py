@@ -193,7 +193,6 @@ class ScenarioManager(object):
           multiple times in parallel.
         """
         with self._my_lock:
-            print ( "NOW ", timestamp.elapsed_seconds, " last last run ", self._timestamp_last_run)
             if self._running and self._timestamp_last_run < timestamp.elapsed_seconds:
                 self._timestamp_last_run = timestamp.elapsed_seconds
 

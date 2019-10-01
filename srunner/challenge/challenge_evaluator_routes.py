@@ -487,7 +487,7 @@ class ChallengeEvaluator(object):
         master_scenario_configuration.town = town_name
         # TODO THIS NAME IS BIT WEIRD SINCE THE EGO VEHICLE  IS ALREADY THERE, IT IS MORE ABOUT THE TRANSFORM
         master_scenario_configuration.ego_vehicle = ActorConfigurationData('vehicle.lincoln.mkz2017',
-                                                                           self.ego_vehicle.get_transform())
+                                                                   self.ego_vehicle.get_transform())
         master_scenario_configuration.trigger_point = self.ego_vehicle.get_transform()
         CarlaDataProvider.register_actor(self.ego_vehicle)
 
@@ -644,7 +644,6 @@ class ChallengeEvaluator(object):
                                              draw_shadow=False, color=carla.Color(255, 255, 255),
                                              life_time=0.01)
 
-
             if self.route_visible:
                 turn_positions_and_labels = clean_route(trajectory)
                 self.draw_waypoints(trajectory, turn_positions_and_labels,
@@ -669,7 +668,7 @@ class ChallengeEvaluator(object):
             # check for scenario termination
             for i, _ in enumerate(self.list_scenarios):
 
-                if self.debug==1:
+                if self.debug == 1:
                     behavior = self.list_scenarios[i].scenario.scenario_tree.children[0]
                     if behavior.tip():
                         print("{} {} {} {}".format(self.list_scenarios[i].scenario.scenario_tree.name,
@@ -693,7 +692,6 @@ class ChallengeEvaluator(object):
                     self.list_scenarios[i].remove_all_actors()
                     self.list_scenarios[i] = None
             self.list_scenarios[:] = [scenario for scenario in self.list_scenarios if scenario]
-
 
         # Route finished set for the background scenario to also finish
         blackboard = py_trees.blackboard.Blackboard()
@@ -1157,11 +1155,12 @@ class ChallengeEvaluator(object):
 
         self.background_scenario = self.build_background_scenario(_route_description['town_name'],
                                                                   timeout=route_timeout)
-        
-        self.traffic_light_scenario = self.build_trafficlight_scenario(_route_description['town_name'],
-                                                                  timeout=route_timeout)
 
-        self.list_scenarios = [self.master_scenario, self.background_scenario, self.traffic_light_scenario]
+        self.traffic_light_scenario = self.build_trafficlight_scenario(_route_description['town_name'],
+                                                                        timeout=route_timeout)
+
+        self.list_scenarios = [self.master_scenario, self.background_scenario,
+                               self.traffic_light_scenario]
         # build the instance based on the parsed definitions.
         if self.debug > 0:
             for scenario in sampled_scenarios_definitions:

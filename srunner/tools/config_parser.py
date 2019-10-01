@@ -104,7 +104,8 @@ class ActorConfiguration(ActorConfigurationData):
             amount = int(node.attrib['amount'])
 
         super(ActorConfiguration, self).__init__(set_attrib(node, 'model', 'vehicle.*'),
-                                                 carla.Transform(carla.Location(x=pos_x, y=pos_y, z=pos_z),
+                                                 carla.Transform(carla.Location(x=pos_x,
+                                                                                y=pos_y, z=pos_z),
                                                  carla.Rotation(yaw=yaw)),
                                                  autopilot, random_location, amount)
 
