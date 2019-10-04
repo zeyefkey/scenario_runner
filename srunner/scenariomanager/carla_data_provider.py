@@ -530,8 +530,6 @@ class CarlaActorPool(object):
                 if walker: # If the model is a walker we try to directly set the autopilot to it.
                     # TODO no idea how to use the walker autopilot.
                     walker = SpawnActor(blueprint, spawn_point)
-                    controller = carla.WalkerAIController(walker)
-                    controller.start()
                     batch.append(walker)
                 else:
                     batch.append(SpawnActor(blueprint, spawn_point).then(SetAutopilot(FutureActor, autopilot)))
