@@ -53,6 +53,15 @@ class BackgroundActivityWalkers(BasicScenario):
             for _actor in new_actors:
                 self.other_actors.append(_actor)
 
+    def _create_behavior(self):
+        """
+        Basic behavior do nothing, i.e. Idle
+        """
+
+        # Build behavior tree
+        sequence = py_trees.composites.Sequence("Sequence Behavior")
+
+        return sequence
 
 
     def _create_test_criteria(self):

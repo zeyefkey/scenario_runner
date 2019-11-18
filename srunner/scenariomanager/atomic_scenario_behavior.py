@@ -423,7 +423,6 @@ class InTriggerDistanceToLocationAlongRoute(AtomicBehavior):
 
         if current_location is None:
             return new_status
-        print ("DIstance Trigger ", current_location.distance(self._location))
         if current_location.distance(self._location) < self._distance + 20:
 
             actor_distance, _ = get_distance_along_route(self._route, current_location)
@@ -431,7 +430,6 @@ class InTriggerDistanceToLocationAlongRoute(AtomicBehavior):
             if (self._location_distance < actor_distance + self._distance and
                 actor_distance < self._location_distance) or \
                     self._location_distance < 1.0:
-                print ( " TRIGGERED PEDESTRIAN")
                 new_status = py_trees.common.Status.SUCCESS
 
         return new_status
