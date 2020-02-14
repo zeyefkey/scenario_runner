@@ -116,6 +116,32 @@ class AtomicBehavior(py_trees.behaviour.Behaviour):
         self.logger.debug("%s.terminate()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
 
 
+class RunScript(AtomicBehavior):
+
+    """
+    Start a python script as behavior
+    """
+
+    def __init__(self, script, name="RunScript"):
+        """
+        Setup parameters
+        """
+        super(RunScript, self).__init__(name, actor)
+        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self._script = script
+
+    def update(self):
+        """
+        Start script
+        """
+        subprocess.Popen(script, shell=True)
+
+        new_status = py_trees.common.Status.SUCCESS
+
+        self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
+        return new_status
+
+
 class ActorTransformSetterToOSCPosition(AtomicBehavior):
 
     """
