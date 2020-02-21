@@ -446,7 +446,7 @@ class OpenScenarioParser(object):
             elif user_defined_action.find('Script') is not None:
                 script = user_defined_action.find('Script')
                 script_file = script.attrib.get('file')
-                atomic = RunScript(script, name=maneuver_name)
+                atomic = RunScript(script_file, name=maneuver_name)
         elif action.find('Private') is not None:
             private_action = action.find('Private')
 

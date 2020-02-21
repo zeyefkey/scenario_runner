@@ -18,8 +18,10 @@ from __future__ import print_function
 import copy
 import math
 import operator
+import os
 import random
 import time
+import subprocess
 
 import numpy as np
 import py_trees
@@ -119,14 +121,25 @@ class AtomicBehavior(py_trees.behaviour.Behaviour):
 class RunScript(AtomicBehavior):
 
     """
-    Start a python script as behavior
+    This is an atomic behavior to start execution of an additional script.
+
+    Args:
+        script (str): String containing the interpreter, scriptpath and arguments
+            Example: "python /path/to/script.py --arg1"
+
+    Attributes:
+        _script (str): String containing the interpreter, scriptpath and arguments
+            Example: "python /path/to/script.py --arg1"
+
+    Note:
+        This is intended for the use with OpenSCENARIO. Be aware of security side effects.
     """
 
     def __init__(self, script, name="RunScript"):
         """
         Setup parameters
         """
-        super(RunScript, self).__init__(name, actor)
+        super(RunScript, self).__init__(name)
         self.logger.debug("%s.__init__()" % (self.__class__.__name__))
         self._script = script
 
@@ -134,9 +147,16 @@ class RunScript(AtomicBehavior):
         """
         Start script
         """
-        subprocess.Popen(script, shell=True)
+        script_components = self._script.split(' ')
+        intepreter = script_components[0]
+        path = script_components[1]
 
-        new_status = py_trees.common.Status.SUCCESS
+        if not os.path.isfile(path):
+            new_status = py_trees.common.Status.FAILURE
+            print("Script file does not exists {}".format(path))
+        else:
+            subprocess.Popen(self._script, shell=True)
+            new_status = py_trees.common.Status.SUCCESS
 
         self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
         return new_status
