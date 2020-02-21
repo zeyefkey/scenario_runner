@@ -13,8 +13,6 @@ etc.
 The atomic behaviors are implemented with py_trees.
 """
 
-from __future__ import print_function
-
 import copy
 import math
 import operator
@@ -25,6 +23,7 @@ import subprocess
 
 import numpy as np
 import py_trees
+from py_trees.logging import Logger as PyTreesLogger
 from py_trees.blackboard import Blackboard
 
 import carla
@@ -84,7 +83,8 @@ class AtomicBehavior(py_trees.behaviour.Behaviour):
         Default init. Has to be called via super from derived class
         """
         super(AtomicBehavior, self).__init__(name)
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger = PyTreesLogger(self.__class__.__name__ + " " + self.name)
+        self.logger.debug("__init__()")
         self.name = name
         self._actor = actor
 
@@ -92,7 +92,7 @@ class AtomicBehavior(py_trees.behaviour.Behaviour):
         """
         Default setup
         """
-        self.logger.debug("%s.setup()" % (self.__class__.__name__))
+        self.logger.debug("setup()")
         return True
 
     def initialise(self):
@@ -109,13 +109,13 @@ class AtomicBehavior(py_trees.behaviour.Behaviour):
             except AttributeError:
                 # It is ok to continue, if the Blackboard variable does not exist
                 pass
-        self.logger.debug("%s.initialise()" % (self.__class__.__name__))
+        self.logger.debug("initialise()")
 
     def terminate(self, new_status):
         """
         Default terminate. Can be extended in derived class
         """
-        self.logger.debug("%s.terminate()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
+        self.logger.debug("terminate()[%s->%s]" % (self.status, new_status))
 
 
 class RunScript(AtomicBehavior):
@@ -140,7 +140,7 @@ class RunScript(AtomicBehavior):
         Setup parameters
         """
         super(RunScript, self).__init__(name)
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
         self._script = script
 
     def update(self):
@@ -153,12 +153,12 @@ class RunScript(AtomicBehavior):
 
         if not os.path.isfile(path):
             new_status = py_trees.common.Status.FAILURE
-            print("Script file does not exists {}".format(path))
+            self.logging.error("Script file does not exists {}".format(path))
         else:
             subprocess.Popen(self._script, shell=True)
             new_status = py_trees.common.Status.SUCCESS
 
-        self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
+        self.logger.debug("update()[%s->%s]" % (self.status, new_status))
         return new_status
 
 
@@ -282,7 +282,7 @@ class SetRelativeOSCVelocity(AtomicBehavior):
         elif self._value_type == 'factor':
             target_velocity = relative_velocity * self._value
         else:
-            print('self._value_type must be delta or factor')
+            self.logging.error('self._value_type must be delta or factor')
 
         # set target velocity
         if actor_velocity < target_velocity:
@@ -325,7 +325,7 @@ class AccelerateToVelocity(AtomicBehavior):
         and target velocity
         """
         super(AccelerateToVelocity, self).__init__(name, actor)
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
         self._control, self._type = get_actor_control(actor)
         self._throttle_value = throttle_value
         self._target_velocity = target_velocity
@@ -352,7 +352,7 @@ class AccelerateToVelocity(AtomicBehavior):
                 self._control.throttle = 0
 
         self._actor.apply_control(self._control)
-        self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
+        self.logger.debug("update()[%s->%s]" % (self.status, new_status))
 
         return new_status
 
@@ -460,7 +460,7 @@ class KeepVelocity(AtomicBehavior):
         and target velocity
         """
         super(KeepVelocity, self).__init__(name, actor)
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
         self._target_velocity = target_velocity
 
         self._control, self._type = get_actor_control(actor)
@@ -510,7 +510,7 @@ class KeepVelocity(AtomicBehavior):
         if GameTime.get_time() - self._start_time > self._duration:
             new_status = py_trees.common.Status.SUCCESS
 
-        self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
+        self.logger.debug("update()[%s->%s]" % (self.status, new_status))
 
         return new_status
 
@@ -546,7 +546,7 @@ class ChangeAutoPilot(AtomicBehavior):
         Setup parameters
         """
         super(ChangeAutoPilot, self).__init__(name, actor)
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
         self._activate = activate
 
     def update(self):
@@ -557,7 +557,7 @@ class ChangeAutoPilot(AtomicBehavior):
 
         new_status = py_trees.common.Status.SUCCESS
 
-        self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
+        self.logger.debug("update()[%s->%s]" % (self.status, new_status))
         return new_status
 
 
@@ -579,7 +579,7 @@ class StopVehicle(AtomicBehavior):
         Setup _actor and maximum braking value
         """
         super(StopVehicle, self).__init__(name, actor)
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
         self._control, self._type = get_actor_control(actor)
         if self._type == 'walker':
             self._control.speed = 0
@@ -602,7 +602,7 @@ class StopVehicle(AtomicBehavior):
 
         self._actor.apply_control(self._control)
 
-        self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
+        self.logger.debug("update()[%s->%s]" % (self.status, new_status))
 
         return new_status
 
@@ -631,7 +631,7 @@ class SyncArrival(AtomicBehavior):
         Setup required parameters
         """
         super(SyncArrival, self).__init__(name, actor)
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
         self._control = carla.VehicleControl()
         self._actor_reference = actor_reference
         self._target_location = target_location
@@ -670,7 +670,7 @@ class SyncArrival(AtomicBehavior):
             self._control.brake = min([abs(control_value), 1])
 
         self._actor.apply_control(self._control)
-        self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
+        self.logger.debug("update()[%s->%s]" % (self.status, new_status))
         return new_status
 
     def terminate(self, new_status):
@@ -703,7 +703,7 @@ class AddNoiseToVehicle(AtomicBehavior):
         Setup actor , maximum steer value and throttle value
         """
         super(AddNoiseToVehicle, self).__init__(name, actor)
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
         self._control = carla.VehicleControl()
         self._steer_value = steer_value
         self._throttle_value = throttle_value
@@ -717,7 +717,7 @@ class AddNoiseToVehicle(AtomicBehavior):
         self._control.throttle = self._throttle_value
         new_status = py_trees.common.Status.SUCCESS
 
-        self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
+        self.logger.debug("update()[%s->%s]" % (self.status, new_status))
         self._actor.apply_control(self._control)
 
         return new_status
@@ -740,7 +740,7 @@ class ChangeNoiseParameters(AtomicBehavior):
         Setup actor , maximum steer value and throttle value
         """
         super(ChangeNoiseParameters, self).__init__(name)
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
         self._new_steer_noise = new_steer_noise
         self._new_throttle_noise = new_throttle_noise
         self._noise_mean = noise_mean
@@ -759,7 +759,7 @@ class ChangeNoiseParameters(AtomicBehavior):
         self._new_throttle_noise[0] = min(self._noise_to_apply + self._dynamic_mean_for_throttle, 1)
 
         new_status = py_trees.common.Status.SUCCESS
-        self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
+        self.logger.debug("update()[%s->%s]" % (self.status, new_status))
         return new_status
 
 
@@ -785,7 +785,7 @@ class BasicAgentBehavior(AtomicBehavior):
         Setup actor and maximum steer value
         """
         super(BasicAgentBehavior, self).__init__(name, actor)
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
         self._agent = BasicAgent(actor)  # pylint: disable=undefined-variable
         self._agent.set_destination((target_location.x, target_location.y, target_location.z))
         self._control = carla.VehicleControl()
@@ -800,7 +800,7 @@ class BasicAgentBehavior(AtomicBehavior):
         if calculate_distance(location, self._target_location) < self._acceptable_target_distance:
             new_status = py_trees.common.Status.SUCCESS
 
-        self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
+        self.logger.debug("update()[%s->%s]" % (self.status, new_status))
         self._actor.apply_control(self._control)
 
         return new_status
@@ -853,7 +853,7 @@ class TrafficJamChecker(AtomicBehavior):
                                                        'time': current_game_time
                                                        }
 
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
 
     def update(self):
         master_scenario_command = self.blackboard.get('master_scenario_command')
@@ -937,7 +937,7 @@ class Idle(AtomicBehavior):
         super(Idle, self).__init__(name)
         self._duration = duration
         self._start_time = 0
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
 
     def initialise(self):
         """
@@ -1311,7 +1311,7 @@ class HandBrakeVehicle(AtomicBehavior):
         Setup vehicle control and brake value
         """
         super(HandBrakeVehicle, self).__init__(name)
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
         self._vehicle = vehicle
         self._control, self._type = get_actor_control(vehicle)
         self._hand_brake_value = hand_brake_value
@@ -1326,10 +1326,9 @@ class HandBrakeVehicle(AtomicBehavior):
             self._vehicle.apply_control(self._control)
         else:
             self._hand_brake_value = None
-            self.logger.debug("%s.update()[%s->%s]" %
-                              (self.__class__.__name__, self.status, new_status))
             self._vehicle.apply_control(self._control)
 
+        self.logger.debug("update()[%s->%s]" % (self.status, new_status))
         return new_status
 
 
@@ -1350,7 +1349,7 @@ class ActorDestroy(AtomicBehavior):
         Setup actor
         """
         super(ActorDestroy, self).__init__(name, actor)
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
 
     def update(self):
         new_status = py_trees.common.Status.RUNNING
@@ -1389,7 +1388,7 @@ class ActorTransformSetter(AtomicBehavior):
         super(ActorTransformSetter, self).__init__(name, actor)
         self._transform = transform
         self._physics = physics
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
 
     def initialise(self):
         if self._actor.is_alive:
@@ -1451,7 +1450,7 @@ class TrafficLightStateSetter(AtomicBehavior):
             new_state = carla.TrafficLightState.Off
 
         self._new_traffic_light_state = new_state
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
 
     def update(self):
         """
@@ -1523,7 +1522,7 @@ class ActorSource(AtomicBehavior):
                     self._actor_limit -= 1
                     self._queue.put(new_actor)
                 except:                             # pylint: disable=bare-except
-                    print("ActorSource unable to spawn actor")
+                    self.logger.warn("ActorSource unable to spawn actor")
         return new_status
 
 
@@ -1601,7 +1600,7 @@ class TrafficLightManipulator(AtomicBehavior):
         self.inside_junction = False
         self.annotations = None
         self.reset_annotations = None
-        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self.logger.debug("__init__()")
 
     def update(self):
 
@@ -1619,12 +1618,12 @@ class TrafficLightManipulator(AtomicBehavior):
             distance_to_traffic_light = area_loc.distance(self.ego_vehicle.get_location())
 
             if self.debug:
-                print("[{}] distance={}".format(traffic_light.id, distance_to_traffic_light))
+                self.logger.info("[{}] distance={}".format(traffic_light.id, distance_to_traffic_light))
 
             if distance_to_traffic_light < self.MAX_DISTANCE_TRAFFIC_LIGHT:
                 self.target_traffic_light = traffic_light
                 if self.debug:
-                    print("--- We are going to affect the following intersection")
+                    self.logger.info("--- We are going to affect the following intersection")
                     loc = self.target_traffic_light.get_location()
                     CarlaDataProvider.get_world().debug.draw_point(loc + carla.Location(z=1.0),
                                                                    size=0.5, color=carla.Color(255, 255, 0),
@@ -1660,7 +1659,7 @@ class TrafficLightManipulator(AtomicBehavior):
                 # And to leave it
                 if self.inside_junction and not ego_waypoint.is_junction:
                     if self.debug:
-                        print("--- Returning the intersection to its previous state")
+                        self.logger.info("--- Returning the intersection to its previous state")
                     self.inside_junction = False
 
                     if self.reset_annotations:
@@ -1697,13 +1696,13 @@ class TrafficLightManipulator(AtomicBehavior):
                         # The traffic light doesn't exist, get another one
                         configuration = None
                 else:
-                    print("Wrong name")
+                    self.logging.info("Wrong name")
                     configuration = None
 
             if configuration is None and self.debug:
-                print("This subtype has no traffic light available")
+                self.logging.info("This subtype has no traffic light available")
         else:
             if self.debug:
-                print("This subtype is unknown")
+                self.logging.info("This subtype is unknown")
 
         return configuration
